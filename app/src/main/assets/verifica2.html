@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Verifica2</title>
+<style>
+:root {
+  --v-bg: #0d1512;
+  --v-panel: #142019;
+  --v-line: rgba(255,255,255,0.08);
+  --v-text: #eef2ef;
+  --v-muted: #8fa39a;
+  --v-green: #22c58b;
+  --v-green-dim: #123c2c;
+  --v-red: #e2544f;
+  --v-red-dim: #3a1a18;
+  --v-amber: #e0a640;
+  --v-amber-dim: #3a2c11;
+  font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --v-bg: #eef1ef; --v-panel: #ffffff; --v-line: rgba(0,0,0,0.08);
+    --v-text: #16211c; --v-muted: #5c6b64;
+    --v-green-dim: #d8f3e6; --v-red-dim: #fbe3e2; --v-amber-dim: #faedd6;
+  }
+}
+:root { box-sizing: border-box; padding-top: env(safe-area-inset-top,0px); padding-bottom: env(safe-area-inset-bottom,0px); }
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; background: var(--v-bg); }
+body { color: var(--v-text); display: flex; align-items: center; justify-content: center; padding: 20px; }
+
+.device {
+  width: 100%; max-width: 440px;
+  background: #05090a;
+  border-radius: 26px;
+  padding: 14px;
+}
+.screen {
+  background: var(--v-panel);
+  border-radius: 16px;
+  overflow: hidden;
+  min-height: 620px;
+  display: flex;
+  flex-direction: column;
+}
+.topbar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 18px; border-bottom: 1px solid var(--v-line);
+}
+.brand { font-weight: 600; font-size: 15px; letter-spacing: 0.2px; }
+.clock { font-size: 13px; color: var(--v-muted); }
+
+.status {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 10px;
+  padding: 30px 20px;
+  transition: background 0.25s ease;
+}
+.status.ok { background: var(--v-green-dim); }
+.status.bad { backg
