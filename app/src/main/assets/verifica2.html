@@ -60,4 +60,183 @@ body { color: var(--v-text); display: flex; align-items: center; justify-content
   transition: background 0.25s ease;
 }
 .status.ok { background: var(--v-green-dim); }
-.status.bad { backg
+.status.bad { background: var(--v-red-dim); }
+.status.wait { background: var(--v-amber-dim); }
+
+.icon-circle {
+  width: 76px; height: 76px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 34px; color: #05090a;
+}
+.status.ok .icon-circle { background: var(--v-green); }
+.status.bad .icon-circle { background: var(--v-red); }
+.status.wait .icon-circle { background: var(--v-amber); }
+
+.amount { font-size: 32px; font-weight: 600; margin: 4px 0 0; }
+.status.ok .amount, .status.ok .label { color: var(--v-green); }
+.status.bad .amount, .status.bad .label { color: var(--v-red); }
+.status.wait .amount, .status.wait .label { color: var(--v-amber); }
+.label { font-size: 14px; }
+.since { font-size: 12px; color: var(--v-muted); margin-top: 4px; }
+
+.detail {
+  padding: 6px 20px 4px;
+  font-size: 13px;
+}
+.detail-row {
+  display: flex; justify-content: space-between;
+  padding: 9px 0; border-top: 1px solid var(--v-line);
+}
+.detail-row span:first-child { color: var(--v-muted); }
+.detail-row span:last-child { font-weight: 500; }
+
+.footerbar {
+  display: flex; justify-content: space-between;
+  padding: 12px 18px; border-top: 1px solid var(--v-line);
+  font-size: 12px; color: var(--v-muted);
+}
+
+.history { padding: 4px 20px 16px; }
+.history-title { font-size: 12px; color: var(--v-muted); margin: 10px 0 6px; }
+.history-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 0; border-top: 1px solid var(--v-line); font-size: 13px;
+}
+.dot { width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; display: inline-block; }
+.dot.ok { background: var(--v-green); }
+.dot.bad { background: var(--v-red); }
+
+.demo {
+  max-width: 440px; width: 100%; margin-top: 14px;
+  background: var(--v-panel); border: 1px solid var(--v-line);
+  border-radius: 12px; padding: 14px 16px;
+}
+.demo-title { font-size: 12px; color: var(--v-muted); margin: 0 0 10px; }
+.demo-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+.demo button {
+  flex: 1; min-width: 100px; padding: 10px; border-radius: 8px;
+  border: 1px solid var(--v-line); background: transparent; color: var(--v-text);
+  font-size: 13px; cursor: pointer;
+}
+.demo button:active { transform: scale(0.97); }
+.wrap { display: flex; flex-direction: column; align-items: center; width: 100%; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="device">
+    <div class="screen">
+      <div class="topbar">
+        <span class="brand">Verifica2</span>
+        <span class="clock" id="clock">--:--</span>
+      </div>
+
+      <div class="status ok" id="status">
+        <div class="icon-circle" id="icon">✓</div>
+        <div class="amount" id="amount">$8.500</div>
+        <div class="label" id="label">Transferencia acreditada</div>
+        <div class="since" id="since">Hace unos segundos</div>
+      </div>
+
+      <div class="detail" id="detailBlock">
+        <div class="detail-row"><span>Recibido de</span><span id="d-from">Juan Pérez</span></div>
+        <div class="detail-row"><span>CUIT / DNI</span><span id="d-doc">30-12345678-9</span></div>
+        <div class="detail-row"><span>Billetera / banco</span><span id="d-bank">Mercado Pago</span></div>
+        <div class="detail-row"><span>N° de operación</span><span id="d-op">10293847561</span></div>
+      </div>
+
+      <div class="history">
+        <div class="history-title">Últimos movimientos</div>
+        <div id="historyList"></div>
+      </div>
+
+      <div class="footerbar">
+        <span>● Conectado</span>
+        <span id="countLabel">Hoy: 0 cobros</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="demo">
+    <p class="demo-title">Panel de simulación (solo para probar la pantalla — no está conectado a Mercado Pago todavía)</p>
+    <div class="demo-buttons">
+      <button onclick="simulate('ok')">Simular acreditado</button>
+      <button onclick="simulate('bad')">Simular rechazado</button>
+      <button onclick="simulate('wait')">Simular pendiente</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let count = 0;
+let history = [];
+
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+const names = ["Juan Pérez", "María Gómez", "Carlos Díaz", "Lucía Fernández", "Pedro Suárez"];
+const banks = ["Mercado Pago", "Banco Nación", "Brubank", "Ualá", "Banco Galicia"];
+
+function randomOp() {
+  return Math.floor(1e10 + Math.random() * 9e9).toString();
+}
+
+function simulate(kind) {
+  const statusEl = document.getElementById('status');
+  const icon = document.getElementById('icon');
+  const amount = document.getElementById('amount');
+  const label = document.getElementById('label');
+  const since = document.getElementById('since');
+  const detailBlock = document.getElementById('detailBlock');
+
+  statusEl.className = 'status ' + kind;
+  since.textContent = 'Hace unos segundos';
+
+  const amt = (Math.floor(Math.random() * 15) + 1) * 500;
+  const formattedAmt = '$' + amt.toLocaleString('es-AR');
+
+  if (kind === 'ok') {
+    icon.textContent = '✓';
+    amount.textContent = formattedAmt;
+    label.textContent = 'Transferencia acreditada';
+    detailBlock.style.display = 'block';
+    const name = names[Math.floor(Math.random() * names.length)];
+    const bank = banks[Math.floor(Math.random() * banks.length)];
+    document.getElementById('d-from').textContent = name;
+    document.getElementById('d-doc').textContent = '3' + Math.floor(Math.random()*10) + '-' + Math.floor(10000000+Math.random()*89999999) + '-9';
+    document.getElementById('d-bank').textContent = bank;
+    document.getElementById('d-op').textContent = randomOp();
+    count++;
+    document.getElementById('countLabel').textContent = 'Hoy: ' + count + ' cobros';
+    addHistory(name, formattedAmt, true);
+  } else if (kind === 'bad') {
+    icon.textContent = '✕';
+    amount.textContent = formattedAmt;
+    label.textContent = 'Pago rechazado o no encontrado';
+    detailBlock.style.display = 'none';
+    addHistory('Comprobante no válido', formattedAmt, false);
+  } else {
+    icon.textContent = '…';
+    amount.textContent = formattedAmt;
+    label.textContent = 'Verificando pago, esperá un momento';
+    detailBlock.style.display = 'none';
+  }
+}
+
+function addHistory(name, amt, ok) {
+  history.unshift({ name, amt, ok, time: new Date().toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'}) });
+  history = history.slice(0, 5);
+  const list = document.getElementById('historyList');
+  list.innerHTML = history.map(h =>
+    '<div class="history-item"><span><span class="dot ' + (h.ok ? 'ok' : 'bad') + '"></span>' + h.name + '</span><span>' + h.amt + ' · ' + h.time + '</span></div>'
+  ).join('');
+}
+</script>
+</body>
+</html>
